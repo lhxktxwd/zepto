@@ -1,7 +1,51 @@
 # Zepto源代码分析 - 2016-03-08
-## 一、整体框架
-### 首先给出整个Zepto的框架图
-![Zepto框架图](/oadaM92/frame.png)
+## 一、Zepto整体架构
+### Zepto架构图
+![Zepto架构图](oadaM92/frame.png)
+### Zepto架构代码
+![Zepto架构代码](oadaM92/frame.png)
+### Zepto架构说明
+通过上面两张图，我们可以发现Zepto整个架构是非常的简单整洁。首先Zepto对象通过执行一个立即调用函数进行赋值，因此Zepto对象的定义就在这个立即调用函数里面，接下来把Zepto赋值给window：`window.Zepto = Zepto`。然后进行$变量名的冲突处理，如果$全局变量还没有定义，就将Zepto对象赋值给$全局变量：`window.$ === undefined && (window.$ = Zepto)`。
+
+接下来看一下
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
