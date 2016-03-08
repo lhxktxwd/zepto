@@ -1,3 +1,10 @@
+# Zepto源代码分析 - 2016-03-08
+## 一、整体框架
+### 首先给出整个Zepto的框架图
+![Zepto框架图](/oadaM92/frame.png)
+
+
+
 # Zepto.js – a minimalist JavaScript library
 
 Zepto is a minimalist JavaScript library for modern browsers with a
