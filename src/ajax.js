@@ -3,6 +3,19 @@
 //     Zepto.js may be freely distributed under the MIT license.
 
 ;(function($){
+  /*
+  jsonpID     ：
+  document    ：
+  key         ：
+  name        ：
+  rscript     ：
+  scriptTypeRE：
+  xmlTypeRE   ：
+  jsonType    ：
+  htmlType    ：
+  blankRE     ：
+  originAnchor：
+   */
   var jsonpID = 0,
       document = window.document,
       key,

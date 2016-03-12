@@ -54,8 +54,10 @@ $函数其实里面什么也没干，只是单纯的调用$.zepto.init函数：`
 
 ### 各主要函数说明
 
-上面其实是说明了$.zepto.init、$.zepto.Z函数，现在来讲一下$.zepto.fragment、$.zepto.isZ、$.zepto.qsa
+上面其实是说明了$.zepto.init、$.zepto.Z函数，现在来讲一下$.zepto.fragment、$.zepto.isZ、$.zepto.qsa。
 
+1、$.zepto.fragment函数
+该函数的作用为
 
 
 
