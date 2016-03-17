@@ -1,60 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<meta charset="utf-8">
 	<title>zepto-test</title>
-	<script type="text/javascript" src="../src/zepto.js"></script>
+	<script src="../src/zepto.js"></script>
+	<script src="../src/event.js"></script>
+	<script src="../src/ajax.js"></script>
+	<script src="../src/form.js"></script>
+	<script src="../src/callbacks.js"></script>
+	<script src="../src/deferred.js"></script>
 </head>
 <body>
-	<div>div</div>
-	<div id="div2">div2</div>
-	<table>
-		<td>td</td>
-	</table>
 	<script type="text/javascript">
-		// var singleTagRE = /^<(\w+)\s*\/?>(?:<\/\1>|)$/
-		// var tagExpanderRE = /<(?!area|br|col|embed|hr|img|input|link|meta|param)(([\w:]+)[^>]*)\/>/ig
-		// var fragmentRE = /^\s*<(\w+|!)[^>]*>/
-		// var containers = {
-	 //      'tr': document.createElement('tbody'),
-	 //      'tbody': table, 'thead': table, 'tfoot': table,
-	 //      'td': tableRow, 'th': tableRow,
-	 //      '*': document.createElement('div')
-	 //    },
+	function fn1() {
+		console.log(1);
+	}
 
-		// var fragment = function(html, name) {
-		//   var dom, nodes, container
+	function fn2() {
+		console.log(2);
+	}
 
-		//   // A special case optimization for a single tag
-		//   // 对于单一标签的特别优化，直接使用document.createElement生成元素
-		//   if (singleTagRE.test(html)) dom = $(document.createElement(RegExp.$1))
+	var callbacks = $.Callbacks();
+	callbacks.add(fn2);
 
-		//   // 非单一标签
-		//   if (!dom) {
-		//     // 使用正则tagExpanderRE处理没有正确闭合的标签：'<div id="div" />' -> '<div> id="div"></div>'
-		//     if (html.replace) html = html.replace(tagExpanderRE, "<$1></$2>")
-		//     // 如果只传入了html参数，取html最外层元素的标签名赋值给name
-		//     if (name === undefined) name = fragmentRE.test(html) && RegExp.$1
-
-		//     if (!(name in containers)) name = '*'
-
-		//     container = containers[name]
-		//     container.innerHTML = '' + html
-		//     dom = $.each(slice.call(container.childNodes), function(){
-		//       container.removeChild(this)
-		//     })
-		//   }
-
-		//   return dom
-		// }
-		// 
-		
-		// var div = document.createElement('div');
-		// var table = document.createElement('table');
-		// div.innerHTML = '<tbody><tr><td>td</td></tr></tbody>';
-		// table.innerHTML = '<tbody><tr><td>td</td></tr></tbody>';
-		
-		// var div2 = document.getElementById('div2');
-		// console.log($('#div2').parents('body'));
+	callbacks.fire();
 	</script>
 </body>
 </html>

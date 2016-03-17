@@ -37,7 +37,7 @@ var Zepto = (function() {
   camelize          ：后面进行初始化，把字符串转换为驼峰写法的函数，例如：abc-def -> abcDef
   uniq              ：后面进行初始化，去掉数组中重复项的函数
   tempParent        ：空的div元素
-  propMap           ：
+  propMap           ：用户通过$.fn.prop获取属性时，矫正输入错误的属性名
   isArray           ：判断是否数组的函数
   */
   var undefined, key, $, classList, emptyArray = [], concat = emptyArray.concat, filter = emptyArray.filter, slice = emptyArray.slice,
@@ -1134,9 +1134,7 @@ var Zepto = (function() {
           if (parentInDocument) traverseNode(node, function(el){
             if (el.nodeName != null && el.nodeName.toUpperCase() === 'SCRIPT' &&
                (!el.type || el.type === 'text/javascript') && !el.src)
-              { debugger; 
-              // window['eval'].call(window, el.innerHTML)
-              }
+              window['eval'].call(window, el.innerHTML)
           })
         })
       })
