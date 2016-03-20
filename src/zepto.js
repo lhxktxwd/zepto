@@ -172,6 +172,11 @@ var Zepto = (function() {
       classCache[name] : (classCache[name] = new RegExp('(^|\\s)' + name + '(\\s|$)')) // 匹配开始位置或者空格，加上类名，加上空格或者结尾的位置
   }
 
+  function classRE(name) {
+    return name in classCache ?
+      classCache[name] : (classCache[name] = new RegExp('(^|\\s)' + name + '(\\s|$)'))
+  }
+
   // 需要添加'px'的属性加上'px'
   function maybeAddPx(name, value) {
     return (typeof value == "number" && !cssNumber[dasherize(name)]) ? value + "px" : value
@@ -211,13 +216,7 @@ var Zepto = (function() {
   // The generated DOM nodes are returned as an array.
   // This function can be overridden in plugins for example to make
   // it compatible with browsers that don't support the DOM fully.
-  /**
-   * 生成DOM节点
-   * @param  {String} html       html片段
-   * @param  {String} name       html片段第一个元素的标签名，可以不传，能自动生成
-   * @param  {[type]} properties [description]
-   * @return {[type]}            [description]
-   */
+  // 生成DOM节点
   zepto.fragment = function(html, name, properties) {
     var dom, nodes, container
 
@@ -248,7 +247,7 @@ var Zepto = (function() {
     }
 
     // 根据propertiess给生成的DOM设置特性。
-    // 此外，还可以设置methodAttributes里面的属性，调用相关的$.fn方法完成
+    // 此外，还可以设置methodAttributes里面的属性，调用属性对应的$.fn方法完成
     if (isPlainObject(properties)) {
       nodes = $(dom)
       $.each(properties, function(key, value) {
@@ -374,12 +373,7 @@ var Zepto = (function() {
   // `$.zepto.qsa` is Zepto's CSS selector implementation which
   // uses `document.querySelectorAll` and optimizes for some special cases, like `#id`.
   // This method can be overridden in plugins.
-  /**
-   * Zepto的css选择器，主要通过querySelectorAll实现，并且通过getElementById、getElementsByClassName和getElementsByTagName来优化性能
-   * @param  {[type]} element  [description]
-   * @param  {[type]} selector [description]
-   * @return {[type]}          [description]
-   */
+  // Zepto的css选择器，主要通过querySelectorAll实现，并且通过getElementById、getElementsByClassName和getElementsByTagName来优化性能
   zepto.qsa = function(element, selector){
     var found,
         maybeID = selector[0] == '#',// selector参数以字符#开头，可能是ID选择器

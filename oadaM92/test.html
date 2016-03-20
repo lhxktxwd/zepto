@@ -3,6 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>zepto-test</title>
+	<!-- <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script> -->
 	<script src="../src/zepto.js"></script>
 	<script src="../src/event.js"></script>
 	<script src="../src/ajax.js"></script>
@@ -11,19 +12,54 @@
 	<script src="../src/deferred.js"></script>
 </head>
 <body>
-	<script type="text/javascript">
-	function fn1() {
-		console.log(1);
-	}
+	<div>div1</div>
+	<div>div2</div>
+	<script>
+		// var ajax1 = function() {
+		// 	var dtd = $.Deferred();
+		// 	setTimeout(function() {
+		// 		console.log('ajax1 complete');
+		// 		dtd.resolve();
+		// 	}, 1000);
+		// 	return dtd;
+		// }
 
-	function fn2() {
-		console.log(2);
-	}
+		// var ajax2 = function() {
+		// 	var dtd = $.Deferred();
+		// 	setTimeout(function() {
+		// 		console.log('ajax2 complete');
+		// 		dtd.resolve();
+		// 	}, 2000);
+		// 	return dtd;
+		// }
 
-	var callbacks = $.Callbacks();
-	callbacks.add(fn2);
+		// var ajax3 = function() {
+		// 	var dtd = $.Deferred();
+		// 	setTimeout(function() {
+		// 		console.log('ajax3 complete');
+		// 		dtd.resolve();
+		// 	}, 2000);
+		// 	return dtd;
+		// }
 
-	callbacks.fire();
+		// var ajax4 = function() {
+		// 	var dtd = $.Deferred();
+		// 	setTimeout(function() {
+		// 		console.log('ajax4 complete');
+		// 		dtd.resolve();
+		// 	}, 2000);
+		// 	return dtd;
+		// }
+
+		// $.when(ajax1(), ajax2()).then(ajax3).then(ajax4);
+	</script>
+
+	<script>
+	var object = {a:1};
+	Object.defineProperty(object, 'a', {
+		writable: false
+	})
+	
 	</script>
 </body>
 </html>
