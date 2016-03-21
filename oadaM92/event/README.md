@@ -63,7 +63,9 @@ if (selector) delegator = function(e){
 
 ####保存事件的相关信息
 
-保存事件的相关信息就是根据参数组成handler对象，保存到上面提过的`handlers`对象中。需要注意的是Zepto是通过DOM对象中添加一个zid来连接DOM对象和对应的handler对象，通过zid函数来赋值和获取zid：
+保存事件的相关信息就是根据参数组成handler对象，保存到上面提过的`handlers`对象中。需要注意的是Zepto是通过DOM对象中添加一个\_zid来连接DOM对象和对应的handler对象。
+
+使用zid函数来赋值和获取\_zid：
 
 ```javascript
 function zid(element) {
@@ -71,11 +73,11 @@ function zid(element) {
 }
 ```
 
-通过一个zid而不是通过DOM对象的引用来连接handler是因为：防止移除掉DOM元素，handlers中还保存着对这个DOM元素的引用。通过使用zid就可以防止这种情况发生，避免了内存泄漏。
+通过一个\_zid而不是通过DOM对象的引用来连接handler是因为：防止移除掉DOM元素后，handlers对象还保存着对这个DOM元素的引用。通过使用\_zid就可以防止这种情况发生，避免了内存泄漏。
 
 ####构建真正的回调函数proxy
 
-Zepto的事件对象有自己添加的方法，例如`isImmediatePropagationStopped`等，所以就要构建proxy函数来进行一层代理，改变触发时的事件对象。此外，如果用户需要进行事件代理，proxy函数执行时就会调用上面构建好的代理函数，否则调用用户传进来的回调函数。因此使用`addEventListener`所传入的真正回调函数就是proxy函数。
+Zepto对事件对象进行了扩展，例如添加`isImmediatePropagationStopped`函数等，所以就要构建proxy函数来进行一层代理，改变触发时的事件对象。此外，如果用户需要进行事件代理，proxy函数执行时就会调用上面构建好的代理函数，否则调用用户传进来的回调函数。因此使用`addEventListener`所传入的真正回调函数就是proxy函数。
 
 ####focus和blur事件的冒泡
 
@@ -105,7 +107,7 @@ $.Event = function(type, props) {
 }
 ```
 
-上面有点要注意的就是当创建鼠标相关的事件要在`document.createEvent`的第一个参数中传入’MouseEvents‘，以提供更多的事件属性。鼠标相关的事件指的是：click、mousedown、mouseup和mousemove。
+上面有点要注意的就是当创建鼠标相关的事件时要在`document.createEvent`的第一个参数中传入’MouseEvents‘，以提供更多的事件属性。鼠标相关的事件指的是：click、mousedown、mouseup和mousemove。
 
 
 
@@ -219,7 +221,7 @@ $.Event = function(type, props) {
     events.split(/\s/).forEach(function(event){
       // 如果事件名为ready，直接调用$.fn.ready方法
       if (event == 'ready') return $(document).ready(fn)
-      
+
       // 构建handler
       var handler   = parse(event)
       handler.fn    = fn
@@ -320,7 +322,7 @@ $.Event = function(type, props) {
   function compatible(event, source) {
     if (source || !event.isDefaultPrevented) {
       source || (source = event)
-      
+
       // 通过改写原生的preventDefault、stopImmediatePropagation和stopPropagation方法实现
       $.each(eventMethods, function(name, predicate) {
         var sourceMethod = source[name]
@@ -411,7 +413,7 @@ $.Event = function(type, props) {
       add(element, event, callback, data, selector, delegator || autoRemove)
     })
   }
- 
+
   $.fn.off = function(event, selector, callback){
     var $this = this
     // event参数为对象，回调自身进行批量取消绑定事件
@@ -487,4 +489,3 @@ $.Event = function(type, props) {
 })(Zepto)
 
 ```
-
