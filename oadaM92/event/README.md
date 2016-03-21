@@ -1,3 +1,123 @@
+#Zepto事件模块源码分析
+
+##一、保存事件数据的handlers
+
+我们知道js原生api中要移除事件，需要传入绑定时的回调函数。而Zepto则可以不传入回调函数，直接移除对应类型的所有事件。原因就在于Zepto在绑定事件时，会把相关的数据都保存到`handlers`对象中，因此就可以在这个变量中查找对应事件的回调函数，来移除事件。
+
+`handlers`对象的数据格式如下：
+
+```javascript
+{
+  1: [ // handlers的值为DOM元素的_zid
+    {
+      del: function() {}, // 实现事件代理的函数
+      e: "click", // 事件名称
+      fn: function() {}, // 用户传入的回调函数
+      i: 0, // 该对象在数组里的下标
+      ns: "", // 事件的命名空间，只用使用$.fn.triggerHandler时可用，$.fn.trigger不能使用。
+      proxy: function(e) {}, // 真正绑定事件时的回调函数，里面判断调用del或者fn
+      sel: undefined // 要进行事件代理时传入的selector
+    }
+  ]
+}
+```
+
+
+
+##二、绑定事件
+
+###主要流程图
+
+![event-flow](event-flow.png)
+
+###流程说明
+
+####处理参数实现函数重载
+
+实现函数重载的重点就是判断参数的类型，处理参数：
+
+```javascript
+// 处理参数，实现函数重载
+if (!isString(selector) && !isFunction(callback) && callback !== false) // 没有传入selector参数
+	callback = data, data = selector, selector = undefined
+if (callback === undefined || data === false) // 没有传入data参数
+	callback = data, data = undefined
+if (callback === false) callback = returnFalse // 回调函数传入的是false，使用returnFalse函数代替
+```
+
+####构建事件代理函数
+
+事件代理函数的重点为：在触发元素和`e.target`之间找到和参数selector相匹配的元素，生成事件对象，触发回调函数：
+
+```javascript
+// 如果有传入selector参数，构建代理函数
+if (selector) delegator = function(e){
+  var evt, match = $(e.target).closest(selector, element).get(0) // match为e.target到触发元素范围内和selector相匹配的元素
+
+  if (match && match !== element) { // 如果有相匹配的元素，改写事件对象，触发回调函数
+    evt = $.extend(createProxy(e), {currentTarget: match, liveFired: element}) 
+    return (autoRemove || callback).apply(match, [evt].concat(slice.call(arguments, 1)))
+  }
+}
+```
+
+####保存事件的相关信息
+
+保存事件的相关信息就是根据参数组成handler对象，保存到上面提过的`handlers`对象中。需要注意的是Zepto是通过DOM对象中添加一个zid来连接DOM对象和对应的handler对象，通过zid函数来赋值和获取zid：
+
+```javascript
+function zid(element) {
+	return element._zid || (element._zid = _zid++)
+}
+```
+
+通过一个zid而不是通过DOM对象的引用来连接handler是因为：防止移除掉DOM元素，handlers中还保存着对这个DOM元素的引用。通过使用zid就可以防止这种情况发生，避免了内存泄漏。
+
+####构建真正的回调函数proxy
+
+Zepto的事件对象有自己添加的方法，例如`isImmediatePropagationStopped`等，所以就要构建proxy函数来进行一层代理，改变触发时的事件对象。此外，如果用户需要进行事件代理，proxy函数执行时就会调用上面构建好的代理函数，否则调用用户传进来的回调函数。因此使用`addEventListener`所传入的真正回调函数就是proxy函数。
+
+####focus和blur事件的冒泡
+
+focus和blur事件本身是不冒泡的，如果需要对这两个事件进行事件代理，就要运用一些小技巧。首先，如果浏览器支持focusin和focusout，就使用这两个可以冒泡事件来代替。如果浏览器不支持focusion和focusout，就利用focus和blur捕获不冒泡的特性，传入`addEventListener`中的第三个参数设置true，以此来进行事件代理。
+
+
+
+##三、取消绑定事件
+
+取消绑定是比较简单的，由于事件绑定时都把相应的数据都保存到了`handlers`对象上，所以只要根据参数在这个对象里寻找对应的回调函数，使用`removeEventListener`取消绑定就可以了。
+
+
+
+##四、触发事件
+
+触发事件也比较简单，通过`document.createEvent`来创建事件对象，然后调用`dispatchEvent`来触发事件。这里有点小优化就是focus和blur事件的触发直接调用focus()和blur()。
+
+创建事件的代码：
+
+```javascript
+$.Event = function(type, props) {
+  if (!isString(type)) props = type, type = props.type
+  var event = document.createEvent(specialEvents[type] || 'Events'), bubbles = true
+  if (props) for (var name in props) (name == 'bubbles') ? (bubbles = !!props[name]) : (event[name] = props[name])
+  event.initEvent(type, bubbles, true)
+  return compatible(event)
+}
+```
+
+上面有点要注意的就是当创建鼠标相关的事件要在`document.createEvent`的第一个参数中传入’MouseEvents‘，以提供更多的事件属性。鼠标相关的事件指的是：click、mousedown、mouseup和mousemove。
+
+
+
+##五、其他
+
+源码大概只有300多行，中其实还有很多值得我们学习的地方，所以大家大可以花点时间阅读一下。
+
+
+
+##六、event模块源代码
+
+```javascript
 //     Zepto.js
 //     (c) 2010-2016 Thomas Fuchs
 //     Zepto.js may be freely distributed under the MIT license.
@@ -286,6 +406,7 @@
           return (autoRemove || callback).apply(match, [evt].concat(slice.call(arguments, 1)))
         }
       }
+
       // 通过add函数来绑定事件
       add(element, event, callback, data, selector, delegator || autoRemove)
     })
@@ -364,3 +485,6 @@
   }
 
 })(Zepto)
+
+```
+
