@@ -1,3 +1,69 @@
+#Zepto ajax 模块 源码分析
+
+##一、前言
+
+这里主讲我学到的东西。
+
+
+
+##二、$.ajaxJSONP相关
+
+1、改写全局的回调函数，使用改写后的参数获取数据：
+
+```javascript
+window[callbackName] =function() {
+  responseData = arguments
+}
+```
+
+2、创建script标签，插入到document.head中
+
+3、给script标签绑定error事件，error事件触发的时候去掉script元素，这样就可以使用setTimeout模仿请求超时了。
+
+4、绑定script标签的onload事件，用户定义的回调函数在这里执行。这样就可以触发options.success的回调函数了。
+
+
+
+##三、$.ajax相关
+
+1、通过创建一个a标签，然后将要处理的url字符串赋值给它的href属性，就可以很容易的获取这个url的host、protocol等部分了。
+
+2、设置了参数cache为false，会在url上加上时间戳。防止缓存。
+
+3、使用deferred.promise包装xhr，使得$.ajax返回的是一个promie对象（前提是有引入deferred模块）
+
+4、使用overrideMimeType方法改写响应的MIME类型，可以解决乱码问题。
+
+5、使用nativeSetHeader来设置请求header
+
+6、(1,eval)(result) 这样写还可以让result里面的代码在全局作用域里面运行
+
+7、正则表达式去掉script标签：`/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi`
+
+8、所有的key和value值都会使用encodeURIComponent编码
+
+
+
+##四、其他
+
+1、$.ajaxSettings 保存着默认的参数对象，所以用户可以修改该对象批量改变ajax的行为
+
+2、创建ajax统一用的是XMLHttpRequest，所以不兼容IE
+
+3、把参数添加到url的函数非常巧妙，把所有情况都考虑到了：
+
+```javascript
+function appendQuery(url, query) {
+  if (query == '') return url
+  return (url + '&' + query).replace(/[&?]{1,2}/, '?')
+}
+```
+
+
+
+##五、源码注释
+
+```javascript
 //     Zepto.js
 //     (c) 2010-2016 Thomas Fuchs
 //     Zepto.js may be freely distributed under the MIT license.
@@ -426,3 +492,6 @@
     return params.join('&').replace(/%20/g, '+')
   }
 })(Zepto)
+
+```
+
